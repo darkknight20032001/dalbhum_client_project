@@ -96,6 +96,10 @@ interface SignInProps {
   setCheckAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function HomePage({ setCheckAuth }: SignInProps) {
+  const [selectPrice, setSelectPrice] = React.useState<number>(0);
+  const [startDate, setStartDate] = React.useState<Date>(new Date());
+  const [endDate, setEndDate] = React.useState<Date>(new Date());
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);

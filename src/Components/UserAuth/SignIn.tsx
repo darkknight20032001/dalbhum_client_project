@@ -12,6 +12,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Copyright(props: any) {
   return (
@@ -35,8 +37,44 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 interface SignInProps {
   setCheckAuth: React.Dispatch<React.SetStateAction<boolean>>;
+  setMyUserId: React.Dispatch<React.SetStateAction<string>>;
+  myUserId: string;
 }
-export default function SignIn({ setCheckAuth }: SignInProps) {
+
+export default function SignIn({
+  setCheckAuth,
+  setMyUserId,
+  myUserId,
+}: SignInProps) {
+  let tempUserId: string = ``;
+  const [email, setEmail] = React.useState<string>(``);
+  const [password, setPassword] = React.useState<string>(``);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  async function signUser() {
+    console.log("The path name is ", location.state?.from?.pathname);
+    const postData = await axios.post("http://localhost:8080/club/login", {
+      email,
+      password,
+    });
+    console.log(JSON.parse(postData?.data?.message)?.userId);
+    const userId: string = JSON.parse(postData?.data?.message)?.userId;
+    tempUserId = userId;
+    localStorage.setItem("userId", userId);
+    setMyUserId(userId);
+  }
+  React.useEffect(() => {
+    function authorizePage() {
+      if (myUserId) {
+        navigate(location.state?.from?.pathname || "/userId/home", {
+          replace: true,
+        });
+      }
+    }
+    authorizePage();
+  }, [myUserId, navigate]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -44,6 +82,7 @@ export default function SignIn({ setCheckAuth }: SignInProps) {
       email: data.get("email"),
       password: data.get("password"),
     });
+    signUser();
   };
 
   return (
@@ -61,7 +100,13 @@ export default function SignIn({ setCheckAuth }: SignInProps) {
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography
+            component="h1"
+            variant="h5"
+            onClick={() => {
+              signUser();
+            }}
+          >
             Sign in
           </Typography>
           <Box
@@ -79,6 +124,9 @@ export default function SignIn({ setCheckAuth }: SignInProps) {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
             />
             <TextField
               margin="normal"
@@ -89,8 +137,11 @@ export default function SignIn({ setCheckAuth }: SignInProps) {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
             />
-            
+
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"

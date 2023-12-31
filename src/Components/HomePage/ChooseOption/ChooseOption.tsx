@@ -4,7 +4,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-
+import {priceList, PriceLists} from './priceList'
 export default function ChooseOption() {
   const [age, setAge] = React.useState<string>("");
 
@@ -18,6 +18,7 @@ export default function ChooseOption() {
         <InputLabel id="demo-simple-select-required-label">
           Select Venue
         </InputLabel>
+
         <Select
           labelId="demo-simple-select-required-label"
           id="demo-simple-select-required"
@@ -25,9 +26,6 @@ export default function ChooseOption() {
           label="Select Venue *"
           onChange={handleChange}
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
           <MenuItem value={"Hall"}>Hall</MenuItem>
           <MenuItem value={"Ground"}>Ground</MenuItem>
           <MenuItem value={"Both"}>Both</MenuItem>
