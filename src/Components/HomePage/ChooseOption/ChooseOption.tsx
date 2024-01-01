@@ -4,13 +4,28 @@ import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import {priceList, PriceLists} from './priceList'
-export default function ChooseOption() {
-  const [age, setAge] = React.useState<string>("");
-
+import { priceList, PriceLists } from "./priceList";
+interface ChooseOptionProps {
+  setSelectPrice: React.Dispatch<React.SetStateAction<number>>;
+}
+export default function ChooseOption({ setSelectPrice }: ChooseOptionProps) {
+  const [venueName, setVenueName] = React.useState<string>("");
+  console.log("Venue Name ", venueName);
   const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+    setVenueName(event.target.value);
   };
+  React.useEffect(() => {
+    function getPrice() {
+      const venueDetails: PriceLists[] = priceList.filter((item) => {
+        return item.venueName === venueName;
+      });
+      if (venueDetails) {
+        console.log(venueDetails[0]?.venuePrice);
+        setSelectPrice(venueDetails[0]?.venuePrice);
+      }
+    }
+    getPrice();
+  }, [venueName]);
 
   return (
     <div>
@@ -22,13 +37,13 @@ export default function ChooseOption() {
         <Select
           labelId="demo-simple-select-required-label"
           id="demo-simple-select-required"
-          value={age}
-          label="Select Venue *"
+          value={venueName}
+          label="Select Venue"
           onChange={handleChange}
         >
-          <MenuItem value={"Hall"}>Hall</MenuItem>
-          <MenuItem value={"Ground"}>Ground</MenuItem>
-          <MenuItem value={"Both"}>Both</MenuItem>
+          {priceList.map((item: PriceLists) => {
+            return <MenuItem value={item.venueName}>{item.venueName}</MenuItem>;
+          })}
         </Select>
         <FormHelperText>Required</FormHelperText>
       </FormControl>

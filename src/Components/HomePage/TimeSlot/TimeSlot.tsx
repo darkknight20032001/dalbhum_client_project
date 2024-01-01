@@ -81,24 +81,33 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 // import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { MobileDateRangePicker } from "@mui/x-date-pickers-pro/MobileDateRangePicker";
 import { DateRange } from "@mui/x-date-pickers-pro";
-
-export default function TimeSlot() {
+interface TimeSlotProps {
+  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
+  setEndDate: React.Dispatch<React.SetStateAction<Date>>;
+  setGetDays: React.Dispatch<React.SetStateAction<number>>;
+}
+export default function TimeSlot({
+  setStartDate,
+  setEndDate,
+  setGetDays,
+}: TimeSlotProps) {
   const [fromDate, setFromDate] = React.useState<dayjs.Dayjs>(
     dayjs(new Date())
   );
   const [toDate, setToDate] = React.useState<dayjs.Dayjs>(dayjs(new Date()));
-  const [getDays, setGetDays] = React.useState<number>(0);
-     React.useEffect(() => {
-       function calculateDays() {
-         let timeDiff: number =
-           toDate.toDate().getTime() - fromDate.toDate().getTime();
-         timeDiff /= 1000 * 60 * 60 * 24;
-         console.log("The time difference is ", Math.round(timeDiff));
-         setGetDays(Math.round(timeDiff));
-       }
-       calculateDays();
-     }, [fromDate, toDate]);
-  
+  React.useEffect(() => {
+    function calculateDays() {
+      let timeDiff: number =
+        toDate.toDate().getTime() - fromDate.toDate().getTime();
+      timeDiff /= 1000 * 60 * 60 * 24;
+      console.log("The time difference is ", Math.round(timeDiff));
+      setGetDays(Math.round(timeDiff));
+      setStartDate(fromDate.toDate());
+      setEndDate(toDate.toDate());
+    }
+    calculateDays();
+  }, [fromDate, toDate]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={["MobileDateRangePicker"]}>

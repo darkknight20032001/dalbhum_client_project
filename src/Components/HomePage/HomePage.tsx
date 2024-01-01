@@ -71,6 +71,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ChooseOption from "./ChooseOption/ChooseOption";
 import TimeSlot from "./TimeSlot/TimeSlot";
+import axios from "axios";
 
 function Copyright(props: any) {
   return (
@@ -99,13 +100,27 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
   const [selectPrice, setSelectPrice] = React.useState<number>(0);
   const [startDate, setStartDate] = React.useState<Date>(new Date());
   const [endDate, setEndDate] = React.useState<Date>(new Date());
+  const [getDays, setGetDays] = React.useState<number>(0);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  console.log("selectPrice ", selectPrice);
+  console.log("startDate ", startDate);
+  console.log("endDate ", endDate);
+  console.log("getDays ", getDays);
+  console.log("Total amount ", selectPrice * getDays);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get("email"),
       password: data.get("password"),
+    });
+    
+    const postInfo = await axios.post("http://localhost:8080/payment", {
+      userId: localStorage.getItem("userId"),
+      fromDate: startDate,
+      toDate: endDate,
+      amount: selectPrice * getDays,
     });
   };
 
@@ -121,8 +136,12 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
             alignItems: "center",
           }}
         >
-          <ChooseOption />
-          <TimeSlot />
+          <ChooseOption setSelectPrice={setSelectPrice} />
+          <TimeSlot
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            setGetDays={setGetDays}
+          />
 
           <Box
             component="form"
