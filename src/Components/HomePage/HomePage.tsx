@@ -105,16 +105,17 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const postInfo = await axios.post("http://localhost:8080/payment", {
-      userId: localStorage.getItem("userId"),
-      startDate: startDate,
-      endDate: endDate,
-      amount: selectPrice * getDays,
-    });
+    async function postBookData() {
+      const postInfo = await axios.post("http://localhost:8080/payment", {
+        userId: localStorage.getItem("userId"),
+        startDate: startDate,
+        endDate: endDate,
+        amount: selectPrice * getDays,
+      });
+    }
+    postBookData();
   };
 
-  
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
