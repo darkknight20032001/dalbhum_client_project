@@ -108,8 +108,8 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     async function postBookData() {
       const postInfo = await axios.post("http://localhost:8080/payment", {
         userId: localStorage.getItem("userId"),
-        startDate: startDate,
-        endDate: endDate,
+        // startDate: startDate,
+        // endDate: endDate,
         amount: selectPrice * getDays,
       });
     }
