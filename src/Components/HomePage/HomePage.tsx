@@ -115,11 +115,11 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
       email: data.get("email"),
       password: data.get("password"),
     });
-    
+
     const postInfo = await axios.post("http://localhost:8080/payment", {
       userId: localStorage.getItem("userId"),
-      fromDate: startDate,
-      toDate: endDate,
+      startDate: startDate,
+      endDate: endDate,
       amount: selectPrice * getDays,
     });
   };
