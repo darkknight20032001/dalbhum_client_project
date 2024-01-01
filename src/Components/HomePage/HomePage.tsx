@@ -108,11 +108,6 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-
     const postInfo = await axios.post("http://localhost:8080/payment", {
       userId: localStorage.getItem("userId"),
       startDate: startDate,
