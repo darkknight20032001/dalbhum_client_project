@@ -46,10 +46,15 @@ function App() {
               )
             }
           />
-
           <Route
-            path={"/userId/home"}
-            element={<HomePage setCheckAuth={setCheckAuth} />}
+            path="/userId/home"
+            element={
+              myUserId !== `` ? (
+                <HomePage setCheckAuth={setCheckAuth} />
+              ) : (
+                <Navigate to="/userAuth" replace />
+              )
+            }
           />
         </Routes>
       </BrowserRouter>
