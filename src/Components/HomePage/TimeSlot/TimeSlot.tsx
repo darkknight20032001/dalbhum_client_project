@@ -82,8 +82,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDateRangePicker } from "@mui/x-date-pickers-pro/MobileDateRangePicker";
 import { DateRange } from "@mui/x-date-pickers-pro";
 interface TimeSlotProps {
-  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
-  setEndDate: React.Dispatch<React.SetStateAction<Date>>;
+  setStartDate: React.Dispatch<React.SetStateAction<string>>;
+  setEndDate: React.Dispatch<React.SetStateAction<string>>;
   setGetDays: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function TimeSlot({
@@ -102,8 +102,8 @@ export default function TimeSlot({
       timeDiff /= 1000 * 60 * 60 * 24;
       console.log("The time difference is ", Math.round(timeDiff));
       setGetDays(Math.round(timeDiff));
-      setStartDate(fromDate.toDate());
-      setEndDate(toDate.toDate());
+      setStartDate(dayjs(fromDate.toDate()).format("YYYY-MM-DD"));
+      setEndDate(dayjs(toDate.toDate()).format("YYYY-MM-DD"));
     }
     calculateDays();
   }, [fromDate, toDate]);
@@ -117,6 +117,10 @@ export default function TimeSlot({
         >
           <MobileDateRangePicker
             defaultValue={[dayjs(new Date()), dayjs(new Date())]}
+            onMonthChange={(newMonth: dayjs.Dayjs) => {
+              console.log("hello");
+              console.log("The new month is ", newMonth);
+            }}
             onChange={(newValue: DateRange<dayjs.Dayjs> | null) => {
               if (
                 newValue !== null &&

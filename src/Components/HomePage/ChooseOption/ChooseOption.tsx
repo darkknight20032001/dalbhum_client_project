@@ -42,7 +42,14 @@ export default function ChooseOption({ setSelectPrice }: ChooseOptionProps) {
           onChange={handleChange}
         >
           {priceList.map((item: PriceLists) => {
-            return <MenuItem value={item.venueName}>{item.venueName}</MenuItem>;
+            return (
+              <MenuItem
+                key={item.venueName + Math.random()}
+                value={item.venueName}
+              >
+                {item.venueName}
+              </MenuItem>
+            );
           })}
         </Select>
         <FormHelperText>Required</FormHelperText>

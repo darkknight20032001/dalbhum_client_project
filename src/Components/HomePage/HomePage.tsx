@@ -56,7 +56,6 @@
 
 // TODO remove, this demo shouldn't need to reset the theme.
 import * as React from "react";
-
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Link from "@mui/material/Link";
@@ -67,6 +66,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ChooseOption from "./ChooseOption/ChooseOption";
 import TimeSlot from "./TimeSlot/TimeSlot";
 import axios from "axios";
+import dayjs from "dayjs";
 
 function Copyright(props: any) {
   return (
@@ -93,8 +93,8 @@ interface SignInProps {
 }
 export default function HomePage({ setCheckAuth }: SignInProps) {
   const [selectPrice, setSelectPrice] = React.useState<number>(0);
-  const [startDate, setStartDate] = React.useState<Date>(new Date());
-  const [endDate, setEndDate] = React.useState<Date>(new Date());
+  const [startDate, setStartDate] = React.useState<string>(dayjs(new Date()).format('YYYY-MM-DD'));
+  const [endDate, setEndDate] = React.useState<string>(dayjs(new Date()).format('YYYY-MM-DD'));
   const [getDays, setGetDays] = React.useState<number>(0);
 
   console.log("selectPrice ", selectPrice);
@@ -105,7 +105,7 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    async function postBookData() {
+    async function postOrderData() {
       const postInfo = await axios.post("http://localhost:8080/payment", {
         userId: localStorage.getItem("userId"),
         // startDate: startDate,
@@ -113,7 +113,9 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
         amount: selectPrice * getDays,
       });
     }
-    postBookData();
+    
+    postOrderData();
+    
   };
 
   return (
