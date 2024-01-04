@@ -93,15 +93,22 @@ interface SignInProps {
 }
 export default function HomePage({ setCheckAuth }: SignInProps) {
   const [selectPrice, setSelectPrice] = React.useState<number>(0);
-  const [startDate, setStartDate] = React.useState<string>(dayjs(new Date()).format('YYYY-MM-DD'));
-  const [endDate, setEndDate] = React.useState<string>(dayjs(new Date()).format('YYYY-MM-DD'));
+  const [startDate, setStartDate] = React.useState<string>(
+    dayjs(new Date()).format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = React.useState<string>(
+    dayjs(new Date()).format("YYYY-MM-DD")
+  );
   const [getDays, setGetDays] = React.useState<number>(0);
-
+  const [currMonthCalendar, setCurrMonthCalendar] = React.useState<number>(
+    dayjs(new Date()).month() + 1
+  );
   console.log("selectPrice ", selectPrice);
   console.log("startDate ", startDate);
   console.log("endDate ", endDate);
   console.log("getDays ", getDays);
   console.log("Total amount ", selectPrice * getDays);
+  
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,10 +120,14 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
         amount: selectPrice * getDays,
       });
     }
-    
     postOrderData();
-    
   };
+  React.useEffect(() => {
+    async function postMonthCalendar() {
+      console.log(currMonthCalendar);
+    }
+    postMonthCalendar();
+  }, [currMonthCalendar]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -135,6 +146,7 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
             setStartDate={setStartDate}
             setEndDate={setEndDate}
             setGetDays={setGetDays}
+            setCurrMonthCalendar={setCurrMonthCalendar}
           />
 
           <Box

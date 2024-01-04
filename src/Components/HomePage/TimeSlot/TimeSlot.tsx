@@ -85,11 +85,13 @@ interface TimeSlotProps {
   setStartDate: React.Dispatch<React.SetStateAction<string>>;
   setEndDate: React.Dispatch<React.SetStateAction<string>>;
   setGetDays: React.Dispatch<React.SetStateAction<number>>;
+  setCurrMonthCalendar: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function TimeSlot({
   setStartDate,
   setEndDate,
   setGetDays,
+  setCurrMonthCalendar,
 }: TimeSlotProps) {
   const [fromDate, setFromDate] = React.useState<dayjs.Dayjs>(
     dayjs(new Date())
@@ -118,8 +120,8 @@ export default function TimeSlot({
           <MobileDateRangePicker
             defaultValue={[dayjs(new Date()), dayjs(new Date())]}
             onMonthChange={(newMonth: dayjs.Dayjs) => {
-              console.log("hello");
               console.log("The new month is ", newMonth);
+              setCurrMonthCalendar(newMonth.toDate().getMonth()+1);
             }}
             onChange={(newValue: DateRange<dayjs.Dayjs> | null) => {
               if (
