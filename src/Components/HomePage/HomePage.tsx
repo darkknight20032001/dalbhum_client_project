@@ -100,9 +100,8 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     dayjs(new Date()).format("YYYY-MM-DD")
   );
   const [getDays, setGetDays] = React.useState<number>(0);
-  const [currMonthCalendar, setCurrMonthCalendar] = React.useState<number>(
-    dayjs(new Date()).month() + 1
-  );
+  const [currMonthCalendar, setCurrMonthCalendar] = React.useState<string>(
+    (dayjs(new Date()).toDate().getMonth() + 1)+"-"+(dayjs(new Date()).toDate().getFullYear()));
   console.log("selectPrice ", selectPrice);
   console.log("startDate ", startDate);
   console.log("endDate ", endDate);

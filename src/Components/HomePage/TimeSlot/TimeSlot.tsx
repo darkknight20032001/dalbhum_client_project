@@ -85,7 +85,7 @@ interface TimeSlotProps {
   setStartDate: React.Dispatch<React.SetStateAction<string>>;
   setEndDate: React.Dispatch<React.SetStateAction<string>>;
   setGetDays: React.Dispatch<React.SetStateAction<number>>;
-  setCurrMonthCalendar: React.Dispatch<React.SetStateAction<number>>;
+  setCurrMonthCalendar: React.Dispatch<React.SetStateAction<string>>;
 }
 export default function TimeSlot({
   setStartDate,
@@ -121,7 +121,7 @@ export default function TimeSlot({
             defaultValue={[dayjs(new Date()), dayjs(new Date())]}
             onMonthChange={(newMonth: dayjs.Dayjs) => {
               console.log("The new month is ", newMonth);
-              setCurrMonthCalendar(newMonth.toDate().getMonth()+1);
+              setCurrMonthCalendar((newMonth.toDate().getMonth()+1)+"-"+(newMonth.toDate().getFullYear()));
             }}
             onChange={(newValue: DateRange<dayjs.Dayjs> | null) => {
               if (
