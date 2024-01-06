@@ -166,15 +166,14 @@ export default function TimeSlot({
     function checkDateRange() {
       const startDay: number = Number(dayjs(startDate).day().toString());
       const endDay: number = Number(dayjs(endDate).day().toString());
-      availableDates.forEach((myDate: number) => {
-        if (myDate >= startDay && myDate <= endDay) {
-          console.log("hello");
-          return false;
-        }
-      });
-      return true;
+      const availability: number[] = availableDates.filter(
+        (myDate: number) => myDate >= startDay && myDate <= endDay
+      );
+      console.log("The availability is ", availability);
     }
-    console.log(checkDateRange());
+    if (startDate < endDate) {
+      checkDateRange();
+    }
   }, [availableDates, startDate, endDate]);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
