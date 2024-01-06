@@ -67,6 +67,7 @@ import ChooseOption from "./ChooseOption/ChooseOption";
 import TimeSlot from "./TimeSlot/TimeSlot";
 import axios from "axios";
 import dayjs from "dayjs";
+import { monthList } from "./TimeSlot/monthList";
 
 function Copyright(props: any) {
   return (
@@ -100,14 +101,13 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     dayjs(new Date()).format("YYYY-MM-DD")
   );
   const [getDays, setGetDays] = React.useState<number>(0);
-  const [currMonthCalendar, setCurrMonthCalendar] = React.useState<string>(
-    (dayjs(new Date()).toDate().getMonth() + 1)+"-"+(dayjs(new Date()).toDate().getFullYear()));
-  console.log("selectPrice ", selectPrice);
-  console.log("startDate ", startDate);
-  console.log("endDate ", endDate);
-  console.log("getDays ", getDays);
-  console.log("Total amount ", selectPrice * getDays);
-  
+  const [currMonthCalendar, setCurrMonthCalendar] = React.useState<number>(
+    dayjs(new Date()).toDate().getMonth()
+  );
+  const [currYearCalendar, setCurrYearCalendar] = React.useState<string>(
+    dayjs(new Date()).toDate().getFullYear().toString()
+  );
+  const [availableDates, setAvailableDates] = React.useState<number[]>([]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -123,10 +123,17 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
   };
   React.useEffect(() => {
     async function postMonthCalendar() {
-      console.log(currMonthCalendar);
+      const getAvailableDates = await axios.get(
+        "http://localhost:8080/club/available_dates?year=" +
+          currYearCalendar +
+          "&month=" +
+          monthList[currMonthCalendar].toUpperCase()
+      );
+      console.log("The available dates are ", getAvailableDates);
+      setAvailableDates(getAvailableDates?.data);
     }
     postMonthCalendar();
-  }, [currMonthCalendar]);
+  }, [currMonthCalendar, currYearCalendar]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -142,10 +149,17 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
         >
           <ChooseOption setSelectPrice={setSelectPrice} />
           <TimeSlot
+            startDate={startDate}
+            endDate={endDate}
             setStartDate={setStartDate}
             setEndDate={setEndDate}
             setGetDays={setGetDays}
+            currMonthCalendar={currMonthCalendar}
             setCurrMonthCalendar={setCurrMonthCalendar}
+            currYearCalendar={currYearCalendar}
+            setCurrYearCalendar={setCurrYearCalendar}
+            setAvailableDates={setAvailableDates}
+            availableDates={availableDates}
           />
 
           <Box

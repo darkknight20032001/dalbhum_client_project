@@ -82,21 +82,36 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDateRangePicker } from "@mui/x-date-pickers-pro/MobileDateRangePicker";
 import { DateRange } from "@mui/x-date-pickers-pro";
 interface TimeSlotProps {
+  startDate: string;
   setStartDate: React.Dispatch<React.SetStateAction<string>>;
+  endDate: string;
   setEndDate: React.Dispatch<React.SetStateAction<string>>;
   setGetDays: React.Dispatch<React.SetStateAction<number>>;
-  setCurrMonthCalendar: React.Dispatch<React.SetStateAction<string>>;
+  currMonthCalendar: number;
+  setCurrMonthCalendar: React.Dispatch<React.SetStateAction<number>>;
+  currYearCalendar: string;
+  setCurrYearCalendar: React.Dispatch<React.SetStateAction<string>>;
+  setAvailableDates: React.Dispatch<React.SetStateAction<number[]>>;
+  availableDates: number[];
 }
 export default function TimeSlot({
+  startDate,
   setStartDate,
+  endDate,
   setEndDate,
   setGetDays,
+  currMonthCalendar,
+  currYearCalendar,
   setCurrMonthCalendar,
+  setCurrYearCalendar,
+  setAvailableDates,
+  availableDates,
 }: TimeSlotProps) {
   const [fromDate, setFromDate] = React.useState<dayjs.Dayjs>(
     dayjs(new Date())
   );
   const [toDate, setToDate] = React.useState<dayjs.Dayjs>(dayjs(new Date()));
+
   React.useEffect(() => {
     function calculateDays() {
       let timeDiff: number =
@@ -107,9 +122,60 @@ export default function TimeSlot({
       setStartDate(dayjs(fromDate.toDate()).format("YYYY-MM-DD"));
       setEndDate(dayjs(toDate.toDate()).format("YYYY-MM-DD"));
     }
+
     calculateDays();
   }, [fromDate, toDate]);
 
+  function disableDates(day: dayjs.Dayjs, position: "start" | "end") {
+    // Access your array of disabled dates
+    // console.log("hello disabling dates!!!");
+    // console.log(availableDates);
+    const disabledDates: dayjs.Dayjs[] = [
+      // // Add your actual disabled dates here
+      // dayjs("2024-01-15"),
+      // dayjs("2024-01-20"),
+    ];
+    availableDates?.forEach((myDate: number) => {
+      const formattedDate: string = `${currYearCalendar}-${(
+        currMonthCalendar + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${myDate.toString().padStart(2, "0")}`;
+      disabledDates.push(dayjs(formattedDate));
+    });
+    // Check if the current day is in the disabled dates array
+    const isDisabled = disabledDates.some((disabledDate) =>
+      day.isSame(disabledDate)
+    );
+
+    const formattedDate: string = `${currYearCalendar}-${(currMonthCalendar + 1)
+      .toString()
+      .padStart(2, "0")}-${availableDates[0]?.toString().padStart(2, "0")}`;
+
+    if (
+      position === "start" &&
+      isDisabled &&
+      day.isAfter(dayjs(formattedDate))
+    ) {
+      return true;
+    }
+
+    return isDisabled;
+  }
+  React.useEffect(() => {
+    function checkDateRange() {
+      const startDay: number = Number(dayjs(startDate).day().toString());
+      const endDay: number = Number(dayjs(endDate).day().toString());
+      availableDates.forEach((myDate: number) => {
+        if (myDate >= startDay && myDate <= endDay) {
+          console.log("hello");
+          return false;
+        }
+      });
+      return true;
+    }
+    console.log(checkDateRange());
+  }, [availableDates, startDate, endDate]);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={["MobileDateRangePicker"]}>
@@ -121,7 +187,8 @@ export default function TimeSlot({
             defaultValue={[dayjs(new Date()), dayjs(new Date())]}
             onMonthChange={(newMonth: dayjs.Dayjs) => {
               console.log("The new month is ", newMonth);
-              setCurrMonthCalendar((newMonth.toDate().getMonth()+1)+"-"+(newMonth.toDate().getFullYear()));
+              setCurrMonthCalendar(newMonth.toDate().getMonth());
+              setCurrYearCalendar(newMonth.toDate().getFullYear().toString());
             }}
             onChange={(newValue: DateRange<dayjs.Dayjs> | null) => {
               if (
@@ -136,6 +203,7 @@ export default function TimeSlot({
                 setToDate(dayjs(new Date()));
               }
             }}
+            shouldDisableDate={disableDates}
           />
         </DemoItem>
       </DemoContainer>
