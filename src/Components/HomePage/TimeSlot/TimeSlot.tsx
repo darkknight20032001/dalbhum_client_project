@@ -127,14 +127,7 @@ export default function TimeSlot({
   }, [fromDate, toDate]);
 
   function disableDates(day: dayjs.Dayjs, position: "start" | "end") {
-    // Access your array of disabled dates
-    // console.log("hello disabling dates!!!");
-    // console.log(availableDates);
-    const disabledDates: dayjs.Dayjs[] = [
-      // // Add your actual disabled dates here
-      // dayjs("2024-01-15"),
-      // dayjs("2024-01-20"),
-    ];
+    const disabledDates: dayjs.Dayjs[] = [];
     availableDates?.forEach((myDate: number) => {
       const formattedDate: string = `${currYearCalendar}-${(
         currMonthCalendar + 1
@@ -162,19 +155,26 @@ export default function TimeSlot({
 
     return isDisabled;
   }
-  React.useEffect(() => {
-    function checkDateRange() {
-      const startDay: number = Number(dayjs(startDate).day().toString());
-      const endDay: number = Number(dayjs(endDate).day().toString());
-      const availability: number[] = availableDates.filter(
-        (myDate: number) => myDate >= startDay && myDate <= endDay
+  const [definedValue, setDefinedValue] = React.useState<dayjs.Dayjs[]>([
+    dayjs(new Date()),
+    dayjs(new Date()),
+  ]);
+  function checkDateRange(firstDay: dayjs.Dayjs, lastDay: dayjs.Dayjs) {
+    const availability: number[] = availableDates.filter((myDate: number) => {
+      return (
+        myDate >= Number(firstDay?.date().toString()) &&
+        myDate <= Number(lastDay?.date().toString())
       );
-      console.log("The availability is ", availability);
+    });
+    if (
+      availability?.length > 0 ||
+      availability?.includes(Number(firstDay?.date().toString())) ||
+      availability.includes(Number(lastDay?.date().toString()))
+    ) {
+      alert("The dates are already booked");
+      setDefinedValue([dayjs(new Date()), dayjs(new Date())]);
     }
-    if (startDate < endDate) {
-      checkDateRange();
-    }
-  }, [availableDates, startDate, endDate]);
+  }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={["MobileDateRangePicker"]}>
@@ -183,7 +183,7 @@ export default function TimeSlot({
           component="MobileDateRangePicker"
         >
           <MobileDateRangePicker
-            defaultValue={[dayjs(new Date()), dayjs(new Date())]}
+            value={[definedValue[0], definedValue[1]]}
             onMonthChange={(newMonth: dayjs.Dayjs) => {
               console.log("The new month is ", newMonth);
               setCurrMonthCalendar(newMonth.toDate().getMonth());
@@ -197,12 +197,22 @@ export default function TimeSlot({
               ) {
                 setFromDate(newValue[0]);
                 setToDate(newValue[1]);
+                checkDateRange(newValue[0], newValue[1]);
               } else {
                 setFromDate(dayjs(new Date()));
                 setToDate(dayjs(new Date()));
               }
             }}
             shouldDisableDate={disableDates}
+            onAccept={(newValue) => {
+              if (
+                newValue !== null &&
+                newValue[0] !== null &&
+                newValue[1] !== null
+              ) {
+                checkDateRange(newValue[0], newValue[1]);
+              }
+            }}
           />
         </DemoItem>
       </DemoContainer>
