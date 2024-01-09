@@ -111,7 +111,7 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    async function postOrderData() {
+    async function postLockedDates() {
       try {
         const postInfo = await axios.post(
           "http://localhost:8080/club/lock_dates",
@@ -125,7 +125,7 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
         console.log(err);
       }
     }
-    postOrderData();
+    postLockedDates();
   };
   React.useEffect(() => {
     async function postMonthCalendar() {
