@@ -113,10 +113,13 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     event.preventDefault();
     async function postOrderData() {
       try {
-        const postInfo = await axios.post("http://localhost:8080/lock_dates", {
-          startDate,
-          endDate,
-        });
+        const postInfo = await axios.post(
+          "http://localhost:8080/club/lock_dates",
+          {
+            startDate,
+            endDate,
+          }
+        );
         console.log(postInfo);
       } catch (err) {
         console.log(err);
