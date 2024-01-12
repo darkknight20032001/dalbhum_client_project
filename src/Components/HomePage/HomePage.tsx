@@ -125,7 +125,21 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
         console.log(err);
       }
     }
+    async function postCreateOrder() {
+      const userId: string = JSON.stringify(localStorage.getItem("userId"));
+      console.log(userId);
+      console.log(selectPrice * getDays);
+      const postData = await axios.post(
+        "http://localhost:8080/club/create_order",
+        {
+          userId: userId,
+          amount: selectPrice * getDays,
+        }
+      );
+      console.log("Post Data is ", postData);
+    }
     postLockedDates();
+    postCreateOrder();
   };
   React.useEffect(() => {
     async function postMonthCalendar() {
