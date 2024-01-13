@@ -69,6 +69,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { monthList } from "./TimeSlot/monthList";
 
+declare global {
+  interface Window {
+    // ⚠️ notice that "Window" is capitalized here
+    Razorpay: any;
+  }
+}
 function Copyright(props: any) {
   return (
     <Typography
@@ -126,7 +132,7 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
       }
     }
     async function postCreateOrder() {
-      const userId: string = JSON.stringify(localStorage.getItem("userId"));
+      const userId = localStorage.getItem("userId");
       console.log(userId);
       console.log(selectPrice * getDays);
       const postData = await axios.post(
@@ -138,9 +144,68 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
       );
       console.log("Post Data is ", postData);
     }
+    function loadScript(src: string) {
+      return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => {
+              resolve(true);
+          };
+          script.onerror = () => {
+              resolve(false);
+          };
+          document.body.appendChild(script);
+      });
+    }
+    async function displayRazorpay() {
+      const res = await loadScript(
+          "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!res) {
+          alert("Razorpay SDK failed to load. Are you online?");
+          return;
+      }
+
+      // creating a new order
+      const userId = localStorage.getItem("userId");
+      const result = await axios.post( "http://localhost:8080/club/create_order",
+      {
+        userId: userId,
+        amount: selectPrice * getDays,
+      });
+
+      console.log(result);
+
+      if (!result) {
+          alert("Server error. Are you online?");
+          return;
+      }
+
+      // Getting the order details back
+      const { amount, id: order_id, currency } = result.data;
+
+      const options = {
+          key: "rzp_test_p6vGRxTr6UPXLw", // Enter the Key ID generated from the Dashboard
+          amount: amount.toString(),
+          currency: currency,
+          name: "Dalbhum Club",
+          order_id: order_id,
+          "handler": function (response: { razorpay_payment_id: any; razorpay_order_id: any; razorpay_signature: any; }){
+            alert(response.razorpay_payment_id);
+            alert(response.razorpay_order_id);
+            alert(response.razorpay_signature);
+        }
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    };
+
     postLockedDates();
-    postCreateOrder();
-  };
+    displayRazorpay();
+
+}
   React.useEffect(() => {
     async function postMonthCalendar() {
       const getAvailableDates = await axios.get(
@@ -203,3 +268,4 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     </ThemeProvider>
   );
 }
+
