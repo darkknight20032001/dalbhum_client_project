@@ -191,10 +191,28 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
           currency: currency,
           name: "Dalbhum Club",
           order_id: order_id,
-          "handler": function (response: { razorpay_payment_id: any; razorpay_order_id: any; razorpay_signature: any; }){
-            alert(response.razorpay_payment_id);
-            alert(response.razorpay_order_id);
-            alert(response.razorpay_signature);
+          "handler": async function (response: { razorpay_payment_id: any; razorpay_order_id: any; razorpay_signature: any; }){
+            // 1. update order
+            const data = {
+              orderId: response.razorpay_order_id,
+              status: "Paid",
+              paymentId: response.razorpay_payment_id
+            }
+            const result = await axios.post("http://localhost:8080/club/update_order",data);
+
+            // 2. add Booking entry
+            const bookingData = {
+              userName: userId,
+              startDate: startDate,
+              endDate: endDate,
+              amenities: "Hall",
+              amount: selectPrice * getDays
+            }
+
+            const bookingResult = await axios.post("http://localhost:8080/club/book",bookingData);
+            console.log(response.razorpay_payment_id);
+            console.log(response.razorpay_order_id);
+            console.log(response.razorpay_signature);
         }
       };
 
