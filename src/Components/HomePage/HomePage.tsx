@@ -71,7 +71,6 @@ import { monthList } from "./TimeSlot/monthList";
 
 declare global {
   interface Window {
-    // ⚠️ notice that "Window" is capitalized here
     Razorpay: any;
   }
 }
@@ -99,6 +98,8 @@ interface SignInProps {
   setCheckAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function HomePage({ setCheckAuth }: SignInProps) {
+  const [venueName, setVenueName] = React.useState<string>("");
+
   const [selectPrice, setSelectPrice] = React.useState<number>(0);
   const [startDate, setStartDate] = React.useState<string>(
     dayjs(new Date()).format("YYYY-MM-DD")
@@ -146,84 +147,95 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     }
     function loadScript(src: string) {
       return new Promise((resolve) => {
-          const script = document.createElement("script");
-          script.src = src;
-          script.onload = () => {
-              resolve(true);
-          };
-          script.onerror = () => {
-              resolve(false);
-          };
-          document.body.appendChild(script);
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = () => {
+          resolve(true);
+        };
+        script.onerror = () => {
+          resolve(false);
+        };
+        document.body.appendChild(script);
       });
     }
     async function displayRazorpay() {
       const res = await loadScript(
-          "https://checkout.razorpay.com/v1/checkout.js"
+        "https://checkout.razorpay.com/v1/checkout.js"
       );
 
       if (!res) {
-          alert("Razorpay SDK failed to load. Are you online?");
-          return;
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
       }
 
       // creating a new order
       const userId = localStorage.getItem("userId");
-      const result = await axios.post( "http://localhost:8080/club/create_order",
-      {
-        userId: userId,
-        amount: selectPrice * getDays,
-      });
+      const result = await axios.post(
+        "http://localhost:8080/club/create_order",
+        {
+          userId: userId,
+          amount: selectPrice * getDays,
+        }
+      );
 
       console.log(result);
 
       if (!result) {
-          alert("Server error. Are you online?");
-          return;
+        alert("Server error. Are you online?");
+        return;
       }
 
       // Getting the order details back
       const { amount, id: order_id, currency } = result.data;
 
       const options = {
-          key: "rzp_test_p6vGRxTr6UPXLw", // Enter the Key ID generated from the Dashboard
-          amount: amount.toString(),
-          currency: currency,
-          name: "Dalbhum Club",
-          order_id: order_id,
-          "handler": async function (response: { razorpay_payment_id: any; razorpay_order_id: any; razorpay_signature: any; }){
-            // 1. update order
-            const data = {
-              orderId: response.razorpay_order_id,
-              status: "Paid",
-              paymentId: response.razorpay_payment_id
-            }
-            const result = await axios.post("http://localhost:8080/club/update_order",data);
+        key: "rzp_test_p6vGRxTr6UPXLw", // Enter the Key ID generated from the Dashboard
+        amount: amount.toString(),
+        currency: currency,
+        name: "Dalbhum Club",
+        order_id: order_id,
+        handler: async function (response: {
+          razorpay_payment_id: any;
+          razorpay_order_id: any;
+          razorpay_signature: any;
+        }) {
+          // 1. update order
+          const data = {
+            orderId: response.razorpay_order_id,
+            status: "Paid",
+            paymentId: response.razorpay_payment_id,
+          };
+          const result = await axios.post(
+            "http://localhost:8080/club/update_order",
+            data
+          );
 
-            // 2. add Booking entry
-            const bookingData = {
-              userName: userId,
-              startDate: startDate,
-              endDate: endDate,
-              amenities: "Hall",
-              amount: selectPrice * getDays
-            }
+          // 2. add Booking entry
+          const bookingData = {
+            userName: userId,
+            startDate: startDate,
+            endDate: endDate,
+            amenities: { venueName },
+            amount: selectPrice * getDays,
+          };
 
-            const bookingResult = await axios.post("http://localhost:8080/club/book",bookingData);
-            console.log(response.razorpay_payment_id);
-            console.log(response.razorpay_order_id);
-            console.log(response.razorpay_signature);
-        }
+          const bookingResult = await axios.post(
+            "http://localhost:8080/club/book",
+            bookingData
+          );
+          console.log(response.razorpay_payment_id);
+          console.log(response.razorpay_order_id);
+          console.log(response.razorpay_signature);
+        },
       };
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
-    };
+    }
 
     postLockedDates();
     displayRazorpay();
-
-}
+  };
   React.useEffect(() => {
     async function postMonthCalendar() {
       const getAvailableDates = await axios.get(
@@ -250,7 +262,11 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
             alignItems: "center",
           }}
         >
-          <ChooseOption setSelectPrice={setSelectPrice} />
+          <ChooseOption
+            venueName={venueName}
+            setVenueName={setVenueName}
+            setSelectPrice={setSelectPrice}
+          />
           <TimeSlot
             startDate={startDate}
             endDate={endDate}
@@ -286,4 +302,3 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     </ThemeProvider>
   );
 }
-

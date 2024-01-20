@@ -6,10 +6,11 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { priceList, PriceLists } from "./priceList";
 interface ChooseOptionProps {
+  venueName: string;
+  setVenueName: React.Dispatch<React.SetStateAction<string>>;
   setSelectPrice: React.Dispatch<React.SetStateAction<number>>;
 }
-export default function ChooseOption({ setSelectPrice }: ChooseOptionProps) {
-  const [venueName, setVenueName] = React.useState<string>("");
+export default function ChooseOption({ setSelectPrice, venueName, setVenueName }: ChooseOptionProps) {
   console.log("Venue Name ", venueName);
   const handleChange = (event: SelectChangeEvent) => {
     setVenueName(event.target.value);
