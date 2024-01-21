@@ -48,7 +48,7 @@ export default function ChooseOption({ setSelectPrice, venueName, setVenueName }
                 key={item.venueName + Math.random()}
                 value={item.venueName}
               >
-                {item.venueName}
+                {item.venueName+"\t\t\t\t"+item.venuePrice}
               </MenuItem>
             );
           })}

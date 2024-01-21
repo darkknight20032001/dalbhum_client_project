@@ -42,19 +42,28 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
   const [password, setPassword] = React.useState<string>(``);
   const [confirmPassword, setConfirmPassword] = React.useState<string>(``);
   const [phoneNumber, setPhoneNumber] = React.useState<string>(``);
-
+  
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     async function handlePostData() {
-      const postData = await axios.post("http://localhost:8080/club/register", {
-        name: firstName + " " + lastName,
-        email: email,
-        password: password,
-        phoneNumber: Number(phoneNumber),
-      });
-      console.log(postData);
+      try {
+        const postData = await axios.post(
+          "http://localhost:8080/club/register",
+          {
+            name: firstName + " " + lastName,
+            email: email,
+            password: password,
+            phoneNumber: Number(phoneNumber),
+          }
+        );
+        console.log(postData);
+      } catch (err) {
+        console.log(err);
+      }
     }
     handlePostData();
+    setCheckAuth(false);
+
     const data = new FormData(event.currentTarget);
 
     console.log({
