@@ -10,6 +10,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from "axios";
 
 function Copyright(props: any) {
   return (
@@ -35,9 +36,27 @@ interface SignUpProps {
   setCheckAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function SignUp({ setCheckAuth }: SignUpProps) {
+  const [firstName, setFirstName] = React.useState<string>(``);
+  const [lastName, setLastName] = React.useState<string>(``);
+  const [email, setEmail] = React.useState<string>(``);
+  const [password, setPassword] = React.useState<string>(``);
+  const [confirmPassword, setConfirmPassword] = React.useState<string>(``);
+  const [phoneNumber, setPhoneNumber] = React.useState<string>(``);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    async function handlePostData() {
+      const postData = await axios.post("http://localhost:8080/club/register", {
+        name: firstName + " " + lastName,
+        email: email,
+        password: password,
+        phoneNumber: Number(phoneNumber),
+      });
+      console.log(postData);
+    }
+    handlePostData();
     const data = new FormData(event.currentTarget);
+
     console.log({
       email: data.get("email"),
       password: data.get("password"),
@@ -78,6 +97,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                  }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -88,6 +110,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -98,6 +123,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   label="Contact"
                   name="contact"
                   autoComplete="contact"
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value);
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -108,6 +136,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
                 />
               </Grid>
               <Grid
@@ -128,6 +159,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                 />
                 <TextField
                   required
@@ -137,6 +171,9 @@ export default function SignUp({ setCheckAuth }: SignUpProps) {
                   type="confirm-password"
                   id="confirm-password"
                   autoComplete="current-password"
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                  }}
                 />
               </Grid>
             </Grid>

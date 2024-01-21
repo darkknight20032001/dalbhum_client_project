@@ -254,6 +254,11 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
+        <Typography>
+          {selectPrice !== 0 &&
+            getDays !== 0 &&
+            "Your total amount is " + selectPrice * getDays}
+        </Typography>
         <Box
           sx={{
             marginTop: 8,
