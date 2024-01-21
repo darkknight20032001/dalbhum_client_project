@@ -254,11 +254,6 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Typography>
-          {selectPrice !== 0 &&
-            getDays !== 0 &&
-            "Your total amount is " + selectPrice * getDays}
-        </Typography>
         <Box
           sx={{
             marginTop: 8,
@@ -292,6 +287,12 @@ export default function HomePage({ setCheckAuth }: SignInProps) {
             noValidate
             sx={{ mt: 1 }}
           >
+            {selectPrice > 0 && getDays > 0 && (
+              <Typography>
+                {"Your total amount is " + selectPrice * getDays}
+              </Typography>
+            )}
+
             <Button
               type="submit"
               fullWidth
